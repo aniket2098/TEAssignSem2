@@ -4,35 +4,47 @@ using namespace std;
 class Tokenizer {
     
     private:
-        vector<string> tokens;
+        vector< vector<string> > tokens;
+        
     public:
-        vector<string> generateTokens(string input);
+        vector< vector<string> > generateTokens(string input);
         string readFile(string filename); 
+        void display(vector< vector<string> >);
 };
 
-vector<string> Tokenizer :: generateTokens(string input) {
+vector< vector<string> > Tokenizer :: generateTokens(string input) {
 
-      
-    string line = "GeeksForGeeks is a must try"; 
-      
-    vector<string> tokens; 
-      
-    stringstream check1(line); 
-      
-    string intermediate; 
-      
-    while(getline(check1, intermediate, ' ')) 
-    { 
-        tokens.push_back(intermediate); 
-    } 
-      
-    for(int i = 0; i < tokens.size(); i++) 
-        cout << tokens[i] << '\n';  
+    int temp = 0;
+    string intermediate;
+    vector<string> tokensLine;
+    
+    string line = "GeeksForGeeks is a must try\nrdsgts"; 
+            
+    stringstream check1(line);  
+
+    while(check1) {
+
+        while(getline(check1, intermediate, ' ')) { 
+            
+            tokensLine.push_back(intermediate); 
+        }
+
+        tokens.push_back(tokensLine);
+    }
+    for(int j = 0; j < tokens.size(); j++)
+    {   
+        for(int i = 0; i < tokens[j].size(); i++) { 
+         
+            cout << tokens[j][i] << ' ';
+        }
+        cout <<'\n';
+    }
+    return tokens;  
 }
 
 string Tokenizer :: readFile(string filename) {
 
-
+    return NULL;
 }
 
 int main() {
