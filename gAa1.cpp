@@ -3,54 +3,56 @@ using namespace std;
 
 class Tokenizer {
     
-    private:
-        vector< vector<string> > tokens;
-        
     public:
-        vector< vector<string> > generateTokens(string input);
-        string readFile(string filename); 
-        void display(vector< vector<string> >);
+        vector<string> generateTokens(string input);
+        void readFile(char* filename); 
+        void display(vector<string>);
 };
-
-vector< vector<string> > Tokenizer :: generateTokens(string input) {
+//TODO: Pass the delimiter as well to generateTokens
+vector<string> Tokenizer :: generateTokens(string input) {
 
     int temp = 0;
     string intermediate;
     vector<string> tokensLine;
-    
-    string line = "GeeksForGeeks is a must try\nrdsgts"; 
-            
-    stringstream check1(line);  
+             
+    stringstream check1(input);  
 
-    while(check1) {
-
-        while(getline(check1, intermediate, ' ')) { 
-            
-            tokensLine.push_back(intermediate); 
-        }
-
-        tokens.push_back(tokensLine);
+  
+    while(getline(check1, intermediate, ' ')) { 
+        tokensLine.push_back(intermediate); 
     }
-    for(int j = 0; j < tokens.size(); j++)
-    {   
-        for(int i = 0; i < tokens[j].size(); i++) { 
-         
-            cout << tokens[j][i] << ' ';
-        }
-        cout <<'\n';
-    }
-    return tokens;  
+
+    return tokensLine;
 }
 
-string Tokenizer :: readFile(string filename) {
+void Tokenizer :: readFile(char* filename) {
 
-    return NULL;
+    string temp;
+    ifstream file;
+    
+    file.open(filename, ios::in);
+    while(!file.eof()) {
+
+        getline(file, temp);
+        display(generateTokens(temp));
+    }
+
+    file.close();
+}
+
+void Tokenizer :: display(vector<string> tokensLine) {
+
+    for(int i = 0; i < tokensLine.size(); i++) { 
+         
+        cout << tokensLine[i] << ' ';
+    }
+    cout<<"\n";
 }
 
 int main() {
 
     Tokenizer tokenizer;
-    tokenizer.generateTokens("LOL");
+    tokenizer.readFile("test.txt");
 
     return 0;
 }
