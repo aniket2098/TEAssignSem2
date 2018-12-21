@@ -3,18 +3,19 @@ using namespace std;
 
 class PriorityQueue {
     private:
-    vector< vector<int> > priorityQueue;
-    int *front, *rear;
+    vector< vector<int> > priorityQueue;    // A 2d vector to store the priority queue
+    int *front, *rear;                      // Store the front and rear of the queues
 
     public:
-    PriorityQueue();
-    int queue(int, int);
-    void dequeue();
-    void display();
-    int isEmpty(int);
+    PriorityQueue();                        // Constructor to initialize the variables
+    int queue(int, int);                    // Add to the queue
+    void dequeue();                         // Delete from the queue
+    void display();                         // Display the queue
+    int isEmpty(int);                       // Check if the queue is empty.
 
 };
 
+// Initialize the variables
 PriorityQueue :: PriorityQueue() {
 
     int temp;
@@ -24,20 +25,21 @@ PriorityQueue :: PriorityQueue() {
     front  = new int[temp];
     rear = new int[temp];
 
-    for(int i = 0; i < temp; i++) {
+    for(int i = 0; i < temp; i++) {         
 
         vector<int> temporary;
-        priorityQueue.push_back(temporary);
+        priorityQueue.push_back(temporary);     //Add no. of queues
         front[i] = -1;
         rear[i] = -1;
     }
 }
 
+// Function for queuing
 int PriorityQueue :: queue(int no, int priority) {
 
-    if(priority >= 0 && priority < priorityQueue.size()) {
+    if(priority >= 0 && priority < priorityQueue.size()) {  // Check if priority inserted is valid
 
-        if(isEmpty(priority)) {
+        if(isEmpty(priority)) { //If empty then 
          
             front[priority]++;
         }
@@ -88,43 +90,4 @@ void PriorityQueue :: display() {
         }
         cout<<endl<<endl;
     }    
-}
-
-int main() {
-
-    PriorityQueue priorityQueue;
-    int choice, temp, priority;
-
-    do {
-
-        cout<<"\n\tEnter choice ::\n\t1)Queue\n\t2)Dequeue\n\t3)Display\n\t4)Exit\n\t";
-        cin>>choice;
-
-        switch(choice) {
-
-            case 1:
-                cout<<"\n\tEnter no. :: ";
-                cin>>temp;
-                cout<<"\tEnter priority :: ";
-                cin>>priority;
-                if(priorityQueue.queue(temp, priority)) {
-
-                    cout<<"\n\tError inserting!!!\n";
-                }
-                break;
-            case 2:
-                priorityQueue.dequeue();
-                break;
-            case 3:
-                priorityQueue.display();
-                break;
-            case 4:
-                break;
-            default:
-                cout<<"\tWrong choice!\nRe-enter!\n";
-                break;
-        }
-    } while(choice != 4);
-
-    return 0;
 }
