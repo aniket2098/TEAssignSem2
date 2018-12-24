@@ -1,2 +1,2 @@
 - START 100
-- MOVER A B
+- MwOVER A B

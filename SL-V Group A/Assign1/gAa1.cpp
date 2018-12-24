@@ -1,26 +1,33 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-typedef struct MOT {
 
-    int code;
-    int size;
-    int noOfOperands;
-    string type;
-}MOT;
 
 class Assembler {
+
+    typedef struct MOT {
+
+        int code;
+        int size;
+        int noOfOperands;
+        string type;
+    }MOT;
 
     vector<string> tokensLine;
     unordered_map<string, MOT> mnemonics;
 
     public:
+        Assembler();
         void generateTokens(string input);
-        void readFile(char* filename); 
-        void display(vector<string>);
+        int pass1(char *filename);
         void initializeTable();
         int validInput();
 };
+
+Assembler ::Assembler() {
+
+
+}
 
 void Assembler :: initializeTable() {
 
@@ -28,73 +35,85 @@ void Assembler :: initializeTable() {
     file.open("Mnemonics", ios::binary);
     string tempMnemonic;
     MOT tempMOT;
-    file>>tempMnemonic;
-    file>>tempMOT.code;
-    file>>tempMOT.size;
-    file>>tempMOT.noOfOperands;
-    file>>tempMOT.type;
-    mnemonics[tempMnemonic] = tempMOT;
-}
 
-void Assembler :: generateTokens(string input) {
+    while (!file.eof())
+    {
 
-    int temp = 0;
-    string intermediate;
-    vector<string> tokensLine;
-             
-    stringstream check1(input);  
-
-  
-    while(getline(check1, intermediate, ' ')) { 
-
-        tokensLine.push_back(intermediate);
-    }
-
-}
-
-int Assembler :: validInput() {
-
-    // if(mnemonics[tokensLine[0]] ) {
-        MOT temp;
-
-        temp = mnemonics[tokensLine[1]];
-          cout<<temp.type;
-    // }
-    return 0;
-}
-
-void Assembler :: readFile(char* filename) {
-
-    string temp;
-    ifstream file;
-    
-    file.open(filename, ios::in);
-    while(!file.eof()) {
-
-        getline(file, temp);
-        cout<<temp;
-        generateTokens(temp);
-        cout<<tokensLine[0];
-        // validInput();
+        file >> tempMnemonic;
+        file >> tempMOT.code;
+        file >> tempMOT.size;
+        file >> tempMOT.noOfOperands;
+        file >> tempMOT.type;
+        mnemonics[tempMnemonic] = tempMOT;
     }
 
     file.close();
 }
 
-void Assembler :: display(vector<string> tokensLine) {
+void Assembler :: generateTokens(string const input) {
 
-    for(int i = 0; i < tokensLine.size(); i++) { 
-         
-        cout << tokensLine[i] << ' ';
+    string intermediate;
+    stringstream check1(input);  
+
+    while(getline(check1, intermediate, ' ')) {
+
+        tokensLine.push_back(intermediate);
     }
-    cout<<"\n";
+}
+
+int Assembler :: validInput() {
+
+    if(mnemonics.find(tokensLine[1]) == mnemonics.end()) {
+
+        MOT temp = mnemonics[tokensLine[1]];
+
+        if(tokensLine.size() - 2 == temp.noOfOperands) {
+
+
+            return 1;
+        }
+
+        return 0;
+    }
+
+    return 0;
+}
+
+int Assembler :: pass1(char *filename) {
+
+    string temp;
+    ifstream file;
+    file.open(filename, ios::in);
+
+    while(!file.eof()) {
+
+        getline(file, temp);
+        generateTokens(temp);
+
+        if( validInput() ) {
+
+
+        }
+
+        else {
+
+            cout<<"\n!!!ERROR!!!\n";
+            return 1;
+        }
+        tokensLine.clear();
+    }
+
+    file.close();
+
+    return 0;
 }
 
 int main() {
 
-    
+    char* file = "input.txt";
     Assembler assembler;
-    assembler.readFile("input.asm");
     assembler.initializeTable();
+    assembler.pass1(file);
+
     return 0;
 }
