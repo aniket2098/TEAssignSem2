@@ -1,40 +1,21 @@
-#include<bits/stdc++.h>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include "AssemblerPass1.h"
+
 using namespace std;
 
+AssemblerPass1 :: AssemblerPass1() = default;
 
-
-class Assembler {
-
-    typedef struct MOT {
-
-        int code;
-        int size;
-        int noOfOperands;
-        string type;
-    }MOT;
-
-    vector<string> tokensLine;
-    unordered_map<string, MOT> mnemonics;
-
-    public:
-        Assembler();
-        void generateTokens(string input);
-        int pass1(char *filename);
-        void initializeTable();
-        int validInput();
-};
-
-Assembler ::Assembler() {
-
-
-}
-
-void Assembler :: initializeTable() {
+void AssemblerPass1 :: initializeMOT() {
 
     ifstream file;
     file.open("Mnemonics", ios::binary);
     string tempMnemonic;
-    MOT tempMOT;
+    MOTRow tempMOT;
 
     while (!file.eof())
     {
@@ -50,7 +31,7 @@ void Assembler :: initializeTable() {
     file.close();
 }
 
-void Assembler :: generateTokens(string const input) {
+void AssemblerPass1 :: generateTokens(string const &input) {
 
     string intermediate;
     stringstream check1(input);  
@@ -61,14 +42,13 @@ void Assembler :: generateTokens(string const input) {
     }
 }
 
-int Assembler :: validInput() {
+int AssemblerPass1 :: validInput() {
 
-    if(mnemonics.find(tokensLine[1]) == mnemonics.end()) {
+    if( !(mnemonics.find(tokensLine[1]) == mnemonics.end()) ) {
 
-        MOT temp = mnemonics[tokensLine[1]];
+        MOTRow temp = mnemonics[tokensLine[1]];
 
         if(tokensLine.size() - 2 == temp.noOfOperands) {
-
 
             return 1;
         }
@@ -79,7 +59,7 @@ int Assembler :: validInput() {
     return 0;
 }
 
-int Assembler :: pass1(char *filename) {
+int AssemblerPass1 :: pass1(char *filename) {
 
     string temp;
     ifstream file;
@@ -108,12 +88,8 @@ int Assembler :: pass1(char *filename) {
     return 0;
 }
 
-int main() {
+void AssemblerPass1::assemblerPass1Driver(char* filename) {
 
-    char* file = "input.txt";
-    Assembler assembler;
-    assembler.initializeTable();
-    assembler.pass1(file);
-
-    return 0;
+    initializeMOT();
+    pass1(filename);
 }
