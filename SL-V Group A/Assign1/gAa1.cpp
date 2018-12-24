@@ -1,21 +1,40 @@
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include "AssemblerPass1.h"
-
+#include<bits/stdc++.h>
 using namespace std;
 
-AssemblerPass1 :: AssemblerPass1() = default;
 
-void AssemblerPass1 :: initializeMOT() {
+
+class Assembler {
+
+    typedef struct MOT {
+
+        int code;
+        int size;
+        int noOfOperands;
+        string type;
+    }MOT;
+
+    vector<string> tokensLine;
+    unordered_map<string, MOT> mnemonics;
+
+    public:
+        Assembler();
+        void generateTokens(string input);
+        int pass1(char *filename);
+        void initializeTable();
+        int validInput();
+};
+
+Assembler ::Assembler() {
+
+
+}
+
+void Assembler :: initializeTable() {
 
     ifstream file;
     file.open("Mnemonics", ios::binary);
     string tempMnemonic;
-    MOTRow tempMOT;
+    MOT tempMOT;
 
     while (!file.eof())
     {
@@ -31,7 +50,7 @@ void AssemblerPass1 :: initializeMOT() {
     file.close();
 }
 
-void AssemblerPass1 :: generateTokens(string const &input) {
+void Assembler :: generateTokens(string const input) {
 
     string intermediate;
     stringstream check1(input);  
@@ -42,13 +61,14 @@ void AssemblerPass1 :: generateTokens(string const &input) {
     }
 }
 
-int AssemblerPass1 :: validInput() {
+int Assembler :: validInput() {
 
-    if( !(mnemonics.find(tokensLine[1]) == mnemonics.end()) ) {
+    if(mnemonics.find(tokensLine[1]) == mnemonics.end()) {
 
-        MOTRow temp = mnemonics[tokensLine[1]];
+        MOT temp = mnemonics[tokensLine[1]];
 
         if(tokensLine.size() - 2 == temp.noOfOperands) {
+
 
             return 1;
         }
@@ -59,7 +79,7 @@ int AssemblerPass1 :: validInput() {
     return 0;
 }
 
-int AssemblerPass1 :: pass1(char *filename) {
+int Assembler :: pass1(char *filename) {
 
     string temp;
     ifstream file;
@@ -88,8 +108,12 @@ int AssemblerPass1 :: pass1(char *filename) {
     return 0;
 }
 
-void AssemblerPass1::assemblerPass1Driver(char* filename) {
+int main() {
 
-    initializeMOT();
-    pass1(filename);
+    char* file = "input.txt";
+    Assembler assembler;
+    assembler.initializeTable();
+    assembler.pass1(file);
+
+    return 0;
 }
