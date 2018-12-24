@@ -1,15 +1,42 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-class Tokenizer {
-    
+typedef struct MOT {
+
+    int code;
+    int size;
+    int noOfOperands;
+    string type;
+}MOT;
+
+class Assembler {
+
+    vector<string> tokensLine;
+    unordered_map<string, MOT> mnemonics;
+
     public:
-        vector<string> generateTokens(string input);
+        void generateTokens(string input);
         void readFile(char* filename); 
         void display(vector<string>);
+        void initializeTable();
+        int validInput();
 };
-//TODO: Pass the delimiter as well to generateTokens
-vector<string> Tokenizer :: generateTokens(string input) {
+
+void Assembler :: initializeTable() {
+
+    ifstream file;
+    file.open("Mnemonics", ios::binary);
+    string tempMnemonic;
+    MOT tempMOT;
+    file>>tempMnemonic;
+    file>>tempMOT.code;
+    file>>tempMOT.size;
+    file>>tempMOT.noOfOperands;
+    file>>tempMOT.type;
+    mnemonics[tempMnemonic] = tempMOT;
+}
+
+void Assembler :: generateTokens(string input) {
 
     int temp = 0;
     string intermediate;
@@ -19,13 +46,24 @@ vector<string> Tokenizer :: generateTokens(string input) {
 
   
     while(getline(check1, intermediate, ' ')) { 
-        tokensLine.push_back(intermediate); 
+
+        tokensLine.push_back(intermediate);
     }
 
-    return tokensLine;
 }
 
-void Tokenizer :: readFile(char* filename) {
+int Assembler :: validInput() {
+
+    // if(mnemonics[tokensLine[0]] ) {
+        MOT temp;
+
+        temp = mnemonics[tokensLine[1]];
+          cout<<temp.type;
+    // }
+    return 0;
+}
+
+void Assembler :: readFile(char* filename) {
 
     string temp;
     ifstream file;
@@ -34,13 +72,16 @@ void Tokenizer :: readFile(char* filename) {
     while(!file.eof()) {
 
         getline(file, temp);
-        display(generateTokens(temp));
+        cout<<temp;
+        generateTokens(temp);
+        cout<<tokensLine[0];
+        // validInput();
     }
 
     file.close();
 }
 
-void Tokenizer :: display(vector<string> tokensLine) {
+void Assembler :: display(vector<string> tokensLine) {
 
     for(int i = 0; i < tokensLine.size(); i++) { 
          
@@ -51,8 +92,9 @@ void Tokenizer :: display(vector<string> tokensLine) {
 
 int main() {
 
-    Tokenizer tokenizer;
-    tokenizer.readFile("test.txt");
-
+    
+    Assembler assembler;
+    assembler.readFile("input.asm");
+    assembler.initializeTable();
     return 0;
 }
