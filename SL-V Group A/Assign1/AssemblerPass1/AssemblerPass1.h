@@ -25,4 +25,9 @@ public:
     int pass1(char *filename);
     void initializeMOT();
     int validInput();
+    int isLiteral(string);
+    int isConstant(string);
+    int isSymbol(string);
+    int isRegister(string);
+    int isConditionCode(string);
 };

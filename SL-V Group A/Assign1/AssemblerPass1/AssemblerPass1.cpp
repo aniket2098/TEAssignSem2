@@ -50,6 +50,17 @@ int AssemblerPass1 :: validInput() {
 
         if(tokensLine.size() - 2 == temp.noOfOperands) {
 
+            if(temp.noOfOperands == 1) {
+
+                //TODO: Register or eq, lt, gt, ne etc.
+
+            }
+            else {
+
+                //TODO: Constant, Literal, Symbol
+
+            }
+
             return 1;
         }
 
@@ -92,4 +103,24 @@ void AssemblerPass1::assemblerPass1Driver(char* filename) {
 
     initializeMOT();
     pass1(filename);
+}
+
+int AssemblerPass1::isLiteral(string) {
+    return 0;
+}
+
+int AssemblerPass1::isConstant(string) {
+    return 0;
+}
+
+int AssemblerPass1::isSymbol(string) {
+    return 0;
+}
+
+int AssemblerPass1::isRegister(string) {
+    return 0;
+}
+
+int AssemblerPass1::isConditionCode(string) {
+    return 0;
 }
