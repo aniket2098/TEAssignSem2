@@ -15,8 +15,18 @@ private:
         string type;
     }MOTRow;
 
+    typedef struct SymbolTableRow {
+
+        int index;
+        int address;
+    }SymbolTableRow;
+
+    int lc, ptp, ltp, stp, rc;
     vector<string> tokensLine;
+    vector<string> conditionCodes;
+    vector<string> registers;
     unordered_map<string, MOTRow> mnemonics;
+    unordered_map<string, SymbolTableRow> symbolTable;
 
 public:
     void assemblerPass1Driver(char*);
