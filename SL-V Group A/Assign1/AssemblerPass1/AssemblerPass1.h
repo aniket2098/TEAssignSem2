@@ -15,18 +15,29 @@ private:
         string type;
     }MOTRow;
 
-    typedef struct SymbolTableRow {
+    typedef struct tableRow {
 
         int index;
         int address;
     }SymbolTableRow;
 
-    int lc, ptp, ltp, stp, rc;
+    typedef struct ic {
+
+        int lc;
+        tuple<string, int> mnemonic;
+        tuple<string, int> op1;
+        tuple<string, int> op2;
+    }ic;
+
+    int lc, ptp, ltp, stp, rc, flagSTART;
     vector<string> tokensLine;
+
+    unordered_map<string, MOTRow> mnemonicOpcodeTable;
+    unordered_map<string, tableRow> symbolTable;
+    unordered_map<string, tableRow> literalTable;
     vector<string> conditionCodes;
     vector<string> registers;
-    unordered_map<string, MOTRow> mnemonics;
-    unordered_map<string, SymbolTableRow> symbolTable;
+    vector<ic> intermediateCode;
 
 public:
     void assemblerPass1Driver(char*);
@@ -34,10 +45,11 @@ public:
     void generateTokens(const string &input);
     int pass1(char *filename);
     void initializeMOT();
-    int validInput();
+    int validateInputAndGenerateIC();
     int isLiteral(string);
     int isConstant(string);
     int isSymbol(string);
     int isRegister(string);
     int isConditionCode(string);
+    int assemblerDirectiveHandler(int);
 };
