@@ -19,6 +19,7 @@ private:
 
         int index;
         int address;
+        string symbolOrLiteral;
     }SymbolTableRow;
 
     typedef struct ic {
@@ -33,8 +34,9 @@ private:
     vector<string> tokensLine;
 
     unordered_map<string, MOTRow> mnemonicOpcodeTable;
-    unordered_map<string, tableRow> symbolTable;
-    unordered_map<string, tableRow> literalTable;
+    vector<tableRow> symbolTable;
+    vector<tableRow> literalTable;
+    vector<int> poolTable;
     vector<string> conditionCodes;
     vector<string> registers;
     vector<ic> intermediateCode;

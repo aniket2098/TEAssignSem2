@@ -12,8 +12,8 @@ using namespace std;
 AssemblerPass1 :: AssemblerPass1() {
 
     lc = 0;
-    ptp = 1;
-    ltp = 1;
+    ptp = 0;
+    ltp = 0;
     stp = 1;
     rc = 0;
     flagSTART = 0;
@@ -61,14 +61,17 @@ int AssemblerPass1 :: validateInputAndGenerateIC() {
     if( (mnemonicOpcodeTable.find(tokensLine[0]) == mnemonicOpcodeTable.end()) ) {
 
         base = 1;
-        if((symbolTable.find(tokensLine[0]) == symbolTable.end())) {
-            tableRow temp1{};
 
+        if(!isSymbol(tokensLine[0]))
+        {
+
+            tableRow temp1{};
             temp1.index = stp ++;
             temp1.address = lc;
+            temp1.symbolOrLiteral = tokensLine[0];
             lc++;
-            symbolTable[tokensLine[0]] = temp1;
-        }
+            symbolTable.push_back(temp1);
+         }
 
     }
 
@@ -78,14 +81,7 @@ int AssemblerPass1 :: validateInputAndGenerateIC() {
 
         if(temp.type == "AD") {
 
-            if (assemblerDirectiveHandler(base)) {
-
-                return 1;
-            }
-            else {
-
-                return 0;
-            }
+            return assemblerDirectiveHandler(base);
         }
 
         intermediateCode[intermediateCode.size() - 1].lc = lc;
@@ -95,7 +91,7 @@ int AssemblerPass1 :: validateInputAndGenerateIC() {
 
             if(temp.noOfOperands == 1) {
 
-                if(isLiteral(tokensLine[1])) {
+                if(isLiteral(tokensLine[1 + base])) {
 
                     return 1;
                 }
@@ -145,73 +141,6 @@ int AssemblerPass1 :: validateInputAndGenerateIC() {
         }
 
         return 0;
-//    }
-//    else  {
-//
-//        MOTRow temp = mnemonicOpcodeTable[tokensLine[1]];
-//        tableRow temp1;
-//
-//        if((symbolTable.find(tokensLine[0]) == symbolTable.end())) {
-//
-//            temp1.index = stp ++;
-//            temp1.address = lc;
-//
-//            symbolTable[tokensLine[0]] = temp1;
-//        }
-//
-//        if( !(mnemonicOpcodeTable.find(tokensLine[1]) == mnemonicOpcodeTable.end()) ) {
-//
-//            if (tokensLine.size() - 2 == temp.noOfOperands) {
-//
-//                if (temp.noOfOperands == 1) {
-//
-//                    if(isLiteral(tokensLine[2])) {
-//
-//                    }
-//
-//                    else if(isConstant(tokensLine[2])) {
-//
-//                    }
-//
-//                    else if(isSymbol(tokensLine[2])) {
-//
-//
-//                    }
-//
-//
-//                } else {
-//
-//                    if(isConditionCode(tokensLine[2])) {
-//
-//                    }
-//                    else if(isRegister(tokensLine[2])) {
-//
-//                    }
-//
-//                    if(isLiteral(tokensLine[3])) {
-//
-//                    }
-//
-//                    else if(isConstant(tokensLine[3])) {
-//
-//                    }
-//
-//                    else if(isSymbol(tokensLine[3])) {
-//
-//
-//                    }
-//
-//                }
-//
-//                return 1;
-//            }
-//
-//            return 0;
-//        }
-//
-//        return 0;
-//    }
-
 }
 
 int AssemblerPass1 :: pass1(char *filename) {
@@ -220,6 +149,7 @@ int AssemblerPass1 :: pass1(char *filename) {
     ifstream file;
     file.open(filename, ios::in);
 
+    int returnValue;
     ic icTemp;
     icTemp.lc = -1;
     icTemp.mnemonic = make_tuple(NULL, -1);
@@ -233,9 +163,12 @@ int AssemblerPass1 :: pass1(char *filename) {
 
         intermediateCode.push_back(icTemp);
 
-        if(validateInputAndGenerateIC() ) {
+        if((returnValue = validateInputAndGenerateIC()) ) {
 
+            if(returnValue == 4) {
 
+                return 1;
+            }
         }
 
         else {
@@ -282,8 +215,9 @@ int AssemblerPass1::isLiteral(string literal) {
 
         temp1.index = ltp++;
         temp1.address = -1;
+        temp1.symbolOrLiteral = literal;
 
-        literalTable[literal] = temp1;
+        literalTable.push_back(temp1);
 
         intermediateCode[intermediateCode.size() - 1].op2 = make_tuple("L", temp1.index);
 
@@ -309,9 +243,15 @@ int AssemblerPass1::isConstant(string constant) {
     return 1;
 }
 
-int AssemblerPass1::isSymbol(string) {
+int AssemblerPass1::isSymbol(string symbol) {
 
+    for(auto const &i : symbolTable) {
 
+        if(symbol == i.symbolOrLiteral) {
+
+            return 1;
+        }
+    }
     return 0;
 }
 
@@ -361,18 +301,23 @@ int AssemblerPass1::assemblerDirectiveHandler(int base) {
     }
     else if(tokensLine[base] == "LTORG") {
 
+        for(int i = ptp; i < literalTable.size(); i++) {
 
-        return 1;
+            literalTable[i].address = lc;
+            lc++;
+        }
+
+        ptp = ltp;
+        return 2;
     }
     else if(tokensLine[base] == "EQU") {
 
 
-        return 1;
+        return 3;
     }
     else if(tokensLine[base] == "END") {
 
-
-        return 1;
+        return 4;
     }
 
     return 0;
