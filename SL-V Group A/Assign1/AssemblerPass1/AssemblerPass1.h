@@ -54,4 +54,6 @@ public:
     int isRegister(string);
     int isConditionCode(string);
     int assemblerDirectiveHandler(int);
+    int imperativeStatementsHandler(int, MOTRow);
+    int declarativeStatementsHandler();
 };
