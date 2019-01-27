@@ -126,15 +126,17 @@ int AssemblerPass1::validateInputAndGenerateIC() {
         base = 1;
         int temp;
         tableRow temp1{};
-        if (!(temp = isSymbol(tokensLine[0]))) {
+        temp = isSymbol(tokensLine[0]);
+        if (temp < 0) {
 
             temp1.index = stp++;
             temp1.symbolOrLiteral = tokensLine[0];
             symbolTable.push_back(temp1);
-        } else if (symbolTable[temp - 1].address != -1) {
-
-            return 0;
         }
+//        else if (symbolTable[temp - 1].address != -1) {
+//cout<<"Finally";
+//            return 0;
+//        }
 
         symbolTable[symbolTable.size() - 1].address = lc;
     }
@@ -157,6 +159,7 @@ int AssemblerPass1::validateInputAndGenerateIC() {
     }
 
     if (temp.type == "DL") {
+
 
         return declarativeStatementsHandler();
     }
@@ -189,14 +192,18 @@ int AssemblerPass1::assemblerDirectiveHandler(int base) {
         return 2;
     } else if (tokensLine[base] == "EQU") {
 
+        int tempIndex = isSymbol(tokensLine[0]);
+        intermediateCode[intermediateCode.size() - 1].lc = lc;
+
         return 3;
     } else if (tokensLine[base] == "ORIGIN") {
         if (isConstant(tokensLine[base + 1])) {
             intermediateCode[intermediateCode.size() - 1].lc = lc;
 
             lc = stoi(tokensLine[base + 1]);
+            return 5;
         }
-        return 5;
+        return 0;
     } else if (tokensLine[base] == "END") {
 
         intermediateCode[intermediateCode.size() - 1].lc = lc;
@@ -221,9 +228,10 @@ int AssemblerPass1::imperativeStatementsHandler(int base, MOTRow temp) {
                 return 1;
             } else {
 
-                if (int temp = isSymbol(tokensLine[1 + base])) {
+                int tempIndex = isSymbol(tokensLine[1 + base]);
+                if (tempIndex >= 0) {
 
-                    intermediateCode[intermediateCode.size() - 1].op2 = make_tuple("S", temp);
+                    intermediateCode[intermediateCode.size() - 1].op2 = make_tuple("S", tempIndex);
                     return 1;
                 }
                 tableRow temp1{};
@@ -253,9 +261,10 @@ int AssemblerPass1::imperativeStatementsHandler(int base, MOTRow temp) {
 
                 return 1;
             } else {
-                if (int temp = isSymbol(tokensLine[2 + base])) {
+                int tempIndex = isSymbol(tokensLine[2 + base]);
+                if (tempIndex >= 0) {
 
-                    intermediateCode[intermediateCode.size() - 1].op2 = make_tuple("S", temp);
+                    intermediateCode[intermediateCode.size() - 1].op2 = make_tuple("S", tempIndex);
                     return 1;
                 }
 
@@ -275,6 +284,29 @@ int AssemblerPass1::imperativeStatementsHandler(int base, MOTRow temp) {
 
 int AssemblerPass1::declarativeStatementsHandler() {
 
+    if(tokensLine[1] == "DS") {
+
+        int tempIndex = isSymbol(tokensLine[0]);
+        if(tempIndex >= 0) {
+
+            symbolTable[tempIndex].address = lc;
+            lc += stoi(tokensLine[2]);
+            return 1;
+        }
+    }
+    if(tokensLine[1] == "DC") {
+
+        if(isConstant(tokensLine[2])) {
+
+            int tempIndex = isSymbol(tokensLine[0]);
+            if(tempIndex >= 0) {
+
+                symbolTable[tempIndex].address = lc;
+                lc++;
+                return 1;
+            }
+        }
+    }
     return 0;
 }
 
@@ -342,7 +374,7 @@ int AssemblerPass1::isSymbol(string symbol) {
             return i.index;
         }
     }
-    return 0;
+    return -1;
 }
 
 int AssemblerPass1::isRegister(string reg) {
