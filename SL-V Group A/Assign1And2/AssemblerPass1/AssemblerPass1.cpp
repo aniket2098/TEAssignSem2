@@ -24,25 +24,39 @@ AssemblerPass1::AssemblerPass1() {
 void AssemblerPass1::assemblerPass1Driver(char *filename) {
 
     initializeMOT();
-    pass1(filename);
+    if(!pass1(filename)) {
 
-    for (auto &i : intermediateCode) {
+        cout << endl << "Intermediate Code\n\n";
 
-        cout << i.lc << "\t(" << get<0>(i.mnemonic) << "," << get<1>(i.mnemonic) << ")\t(" << get<0>(i.op1) << ","
-             << get<1>(i.op1) << ")\t(" << get<0>(i.op2) << "," << get<1>(i.op2) << ")\n";
+        for (auto &i : intermediateCode) {
+
+            cout << i.lc << "\t(" << get<0>(i.mnemonic) << "," << get<1>(i.mnemonic) << ")\t(" << get<0>(i.op1) << ","
+                 << get<1>(i.op1) << ")\t(" << get<0>(i.op2) << "," << get<1>(i.op2) << ")\n";
+        }
+
+        cout << endl << "Symbol Table\n\n";
+
+        for (auto &i : symbolTable) {
+
+            cout << i.index << "\t" << i.symbolOrLiteral << "\t" << i.address << endl;
+        }
+
+        cout << endl << "Literal Table\n\n";
+
+        for (auto &i : literalTable) {
+
+            cout << i.index << "\t" << i.symbolOrLiteral << "\t" << i.address << endl;
+        }
+
+        cout << endl << "Pool Table\n\n";
+
+        for (auto &i : poolTable) {
+
+            cout << i << endl;
+        }
+
+        cout << endl;
     }
-    cout << endl;
-    for (auto &i : symbolTable) {
-
-        cout << i.index << "\t" << i.symbolOrLiteral << "\t" << i.address << endl;
-    }
-
-    for (auto &i : literalTable) {
-
-        cout << i.index << "\t" << i.symbolOrLiteral << "\t" << i.address << endl;
-    }
-
-    cout << endl;
 }
 
 void AssemblerPass1::initializeMOT() {
@@ -142,7 +156,6 @@ int AssemblerPass1::validateInputAndGenerateIC() {
     }
 
     MOTRow temp = mnemonicOpcodeTable[tokensLine[base]];
-
     intermediateCode[intermediateCode.size() - 1].mnemonic = make_tuple(temp.type, temp.code);
 
     if (temp.type == "AD") {
@@ -159,7 +172,6 @@ int AssemblerPass1::validateInputAndGenerateIC() {
     }
 
     if (temp.type == "DL") {
-
 
         return declarativeStatementsHandler();
     }
@@ -178,7 +190,7 @@ int AssemblerPass1::assemblerDirectiveHandler(int base) {
             return 1;
         }
         return 0;
-    } else if (tokensLine[base] == "LTORG") {
+    } else if (tokensLine[base] == "LTORG" || tokensLine[base] == "END") {
 
         intermediateCode[intermediateCode.size() - 1].lc = lc;
         for (int i = ptp; i < literalTable.size(); i++) {
@@ -189,6 +201,8 @@ int AssemblerPass1::assemblerDirectiveHandler(int base) {
 
         poolTable.push_back(ptp);
         ptp = ltp;
+        if(tokensLine[base] == "END")
+            return 4;
         return 2;
     } else if (tokensLine[base] == "EQU") {
 
@@ -204,10 +218,6 @@ int AssemblerPass1::assemblerDirectiveHandler(int base) {
             return 5;
         }
         return 0;
-    } else if (tokensLine[base] == "END") {
-
-        intermediateCode[intermediateCode.size() - 1].lc = lc;
-        return 4;
     }
 
     return 0;
@@ -243,7 +253,7 @@ int AssemblerPass1::imperativeStatementsHandler(int base, MOTRow temp) {
                 return 1;
             }
 
-        } else {
+        } else if(temp.noOfOperands == 2){
 
             if (isConditionCode(tokensLine[1 + base])) {}
 
@@ -276,10 +286,12 @@ int AssemblerPass1::imperativeStatementsHandler(int base, MOTRow temp) {
                 intermediateCode[intermediateCode.size() - 1].op2 = make_tuple("S", temp1.index);
                 return 1;
             }
+        } else if(temp.noOfOperands == 0) {
+
+            return 1;
         }
 
     }
-
 }
 
 int AssemblerPass1::declarativeStatementsHandler() {
@@ -406,3 +418,17 @@ int AssemblerPass1::isConditionCode(string conditionCode) {
     }
     return 0;
 }
+
+const vector<AssemblerPass1::ic> &AssemblerPass1::getIntermediateCode() const {
+
+    return intermediateCode;
+}
+
+const vector<AssemblerPass1::tableRow> &AssemblerPass1::getSymbolTable() const {
+    return symbolTable;
+}
+
+const vector<AssemblerPass1::tableRow> &AssemblerPass1::getLiteralTable() const {
+    return literalTable;
+}
+

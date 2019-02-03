@@ -1,13 +1,14 @@
 START   1   0   1   AD
-MOVER   1   1   2   IS
 LTORG   2   0   0   AD
 END     3   0   0   AD
+ORIGIN  4   0   1   AD
+MOVER   1   1   2   IS
 ADD     2   1   2   IS
 SUB     3   1   2   IS
 MULT    4   1   2   IS
 MOVE    5   1   2   IS
 BC      6   1   2   IS
 READ    7   1   1   IS
-ORIGIN  4   0   1   AD
+STOP    8   1   0   IS
 DC      1   0   1   DL
 DS      2   0   1   DL

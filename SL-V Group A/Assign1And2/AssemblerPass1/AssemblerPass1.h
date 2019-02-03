@@ -1,10 +1,28 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#ifndef AssemblerPass1_h
+#define AssemblerPass1_h
 
 using namespace std;
 
 class AssemblerPass1 {
+
+public:
+    typedef struct ic {
+
+        int lc;
+        tuple<string, int> mnemonic;
+        tuple<string, int> op1;
+        tuple<string, int> op2;
+    }ic;
+
+    typedef struct tableRow {
+
+        int index;
+        int address;
+        string symbolOrLiteral;
+    }tableRow;
 
 private:
     typedef struct MOTRow {
@@ -14,21 +32,6 @@ private:
         int noOfOperands{};
         string type;
     }MOTRow;
-
-    typedef struct tableRow {
-
-        int index;
-        int address;
-        string symbolOrLiteral;
-    }SymbolTableRow;
-
-    typedef struct ic {
-
-        int lc;
-        tuple<string, int> mnemonic;
-        tuple<string, int> op1;
-        tuple<string, int> op2;
-    }ic;
 
     int lc, ptp, ltp, stp, rc, flagSTART;
     vector<string> tokensLine;
@@ -56,4 +59,9 @@ public:
     int assemblerDirectiveHandler(int);
     int imperativeStatementsHandler(int, MOTRow);
     int declarativeStatementsHandler();
+    const vector<ic> &getIntermediateCode() const;
+    const vector<tableRow> &getSymbolTable() const;
+    const vector<tableRow> &getLiteralTable() const;
 };
+
+#endif
