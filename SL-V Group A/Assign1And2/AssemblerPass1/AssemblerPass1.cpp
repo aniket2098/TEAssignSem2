@@ -24,6 +24,7 @@ AssemblerPass1::AssemblerPass1() {
 void AssemblerPass1::assemblerPass1Driver(char *filename) {
 
     initializeMOT();
+
     if(!pass1(filename)) {
 
         cout << endl << "Intermediate Code\n\n";
@@ -83,8 +84,8 @@ int AssemblerPass1::pass1(char *filename) {
 
     string temp;
     ifstream file;
+    filename = "input.txt";
     file.open(filename, ios::in);
-
     int returnValue;
     ic icTemp;
     icTemp.lc = -1;
